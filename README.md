@@ -28,3 +28,5 @@ B.义务：
 ## 脚本功能说明：
 
 creat-install-remove-cmd.sh（识别当前linux系统的包管理器，创建自动安装和卸载软件的命令。）
+
+install-shc-gcc.sh（自动卸载旧版本并安装最新版的shc和gcc）
