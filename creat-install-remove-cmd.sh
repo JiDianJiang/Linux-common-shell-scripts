@@ -32,7 +32,7 @@ creat-install-remove-cmd() {
         install_cmd="${su}aptitude install -y $package";     remove_cmd="${su}aptitude remove -y $package"
     elif command -v rpm >/dev/null 2>&1;          then       # rpm       (Red Hat, SUSE)
         install_cmd="${su}rpm -ivh $package.rpm";            remove_cmd="${su}rpm -e $package"
-    else echo "1"; return 1; fi # 没有找到适合的包管理器
+    else return 1; fi # 没有找到适合的包管理器
     # 找到适合的包管理器
     return 0
 }
