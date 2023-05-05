@@ -7,18 +7,30 @@
 # 脚本参数：inre "i/r:安装/卸载" "s/n:用sudo/不用sudo" "软件包名称"
 # 脚本返回：0:正常执行 1:执行错误
 # ----------
+# 作者：机电匠(JiDianJiang), also known as Mechatronics Craftsman (MC)
+# 版权：Copyright (c) 2023 机电匠(JiDianJiang)
+# 许可：GNU General Public License v3.0
+# GITHUB：https://github.com/JiDianJiang
+# ----------
+# ----------
 
-# 子程序：脚本参数错误处理
+# 子程序：信息输出
+# 入参：[信息]
+# 出参：无
+# 返回值：0:正常执行
+echo-msg() { echo -e "$(basename "$0"): ${1}"; return 0; }
+
+# 子程序：错误处理
 # 入参：[错误信息] [非0的异常退出码]
 # 出参：无
 # 返回值：0:正常执行
-argument-error-handle() { echo "$(basename "$0"): Error - ${1}"; exit $2; return 0; }
+error-handle() { echo-msg "Error - ${1}"; exit $2; return 0; }
 
 # 子程序：创建自动安装和卸载软件的命令
 # 入参：[s/n:用sudo/不用sudo] [软件包名称]
 # 出参：install_cmd 安装命令全局变量 / remove_cmd 卸载命令全局变量
 # 返回值：0:找到包管理并创建安装或卸载命令 / 1:没有找到适合的包管理器
-creat-install-remove-cmd() {
+creat-cmd() {
 	local su=""; if [ "$1" == "s" ]; then su="sudo "; fi
     # 判断使用哪个包管理器(标注'*'表示已测试过)
     if   command -v apt-get >/dev/null 2>&1;  then # apt-get  * (Debian, Ubuntu, Mint)
@@ -47,21 +59,22 @@ creat-install-remove-cmd() {
 }
 
 # 检查是否提供了参数 / 退出码:1
-if [ $# -eq 0 ]; then argument-error-handle "Missing arguments." "1"; fi
+if [ $# -eq 0 ]; then error-handle "Missing arguments." "1"; fi
 # 检查第一个参数 / 退出码:1
-if [[ ! $1 =~ ^[ir]$ ]]; then argument-error-handle "Invalid argument: ${1}. Use i or r." "1"; fi
+if [[ ! $1 =~ ^[ir]$ ]]; then error-handle "Invalid argument: ${1}. Use i or r." "1"; fi
 # 检查第二个参数 / 退出码:1
-if [[ ! $2 =~ ^[sn]$ ]]; then argument-error-handle "Invalid argument: ${1}. Use s or n." "1"; fi
+if [[ ! $2 =~ ^[sn]$ ]]; then error-handle "Invalid argument: ${2}. Use s or n." "1"; fi
 # 检查第三个参数 / 退出码:1
-if [ ! -n "$3" ]; then argument-error-handle "Missing package name." "1"; fi
+if [ ! -n "$3" ]; then error-handle "Missing package name." "1"; fi
 # 执行安装和卸载
-echo "$(basename "$0"): Starting"
-if creat-install-remove-cmd "$2" "$3"; then
+echo-msg "Starting"
+if creat-cmd "$2" "$3"; then
     if [ "$1" == "i" ]; then EXE_CMD=$install_cmd; $install_cmd; RET=$?
     else EXE_CMD=$remove_cmd; $remove_cmd; RET=$?; fi
-    if [ $RET -ne 0 ]; then argument-error-handle "Command '$EXE_CMD' failed to execute." "1"; fi
-else argument-error-handle "No suitable package manager found." "1"; fi # 安装失败
-echo "$(basename "$0"): Done - Command '$EXE_CMD' success to execute."
+    if [ $RET -ne 0 ]; then error-handle "Failed to run '$EXE_CMD'." "1"; fi
+    echo-msg "Success to run '$EXE_CMD'."
+else error-handle "No suitable package manager found." "1"; fi
+echo-msg "Stopped"
 exit 0
 
 # 示例
