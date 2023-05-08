@@ -34,3 +34,5 @@ install-shc-gcc.sh（自动卸载旧版本并安装最新版的shc和gcc）
 compile-sh-to-exe.sh（把shell脚本编译成可执行文件）
 
 inre（自动选择包管理器执行安装或卸载软件包）
+
+color-text.sh（显示常用彩色文字）
